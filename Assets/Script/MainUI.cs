@@ -1,3 +1,4 @@
+using _Game.Scripts.Managers;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -7,6 +8,15 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
+    [SerializeField]
+    private Image _iconOn;
+
+    [SerializeField]
+    private Image _iconOff;
+
+    [SerializeField]
+    private Button _turnSoundOnandOff;
+
     [SerializeField]
     private TextMeshProUGUI _nameUserTxt;
 
@@ -29,11 +39,33 @@ public class MainUI : MonoBehaviour
 
     private void Start()
     {
+        SoundManager.Instance.PlaySFX(1);
+
+        _turnSoundOnandOff.onClick.AddListener(ToggleSound);
+        UpdateSoundState();
+
         _startGameBtn.onClick.AddListener(StartGame);
         _selectedNameBtn.onClick.AddListener(SetUserName);
 
         CheckUserName();
         UpdateCoin();
+    }
+
+    public void ToggleSound()
+    {
+        SoundManager.Instance.IsSound = !SoundManager.Instance.IsSound;
+        UpdateSoundState();
+    }
+
+    public void UpdateSoundState()
+    {
+        _iconOn.gameObject.SetActive(SoundManager.Instance.IsSound);
+        _iconOff.gameObject.SetActive(!SoundManager.Instance.IsSound);
+
+        for (int i = 0; i < SoundManager.Instance.soundEffects.Length; i++)
+        {
+            SoundManager.Instance.soundEffects[i].volume = SoundManager.Instance.IsSound ? SoundManager.Instance.OriginalVolumes[i] : 0f;
+        }
     }
 
     private void StartGame()

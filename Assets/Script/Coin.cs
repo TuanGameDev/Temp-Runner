@@ -1,3 +1,4 @@
+using _Game.Scripts.Managers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class Coin : MonoBehaviour
         if(other.gameObject.tag =="Player")
         {
             GameManager.Instance.Coin++;
+            SoundManager.Instance.PlaySFX(2);
             GameManager.Instance.SaveCoin();
             GameUI.Instance.UpdateCoin(GameManager.Instance.Coin);
             Destroy(gameObject);

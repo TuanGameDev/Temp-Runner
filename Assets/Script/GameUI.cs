@@ -1,3 +1,4 @@
+using _Game.Scripts.Managers;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -39,9 +40,17 @@ public class GameUI : MonoBehaviour
     private GameObject _iconDef;
 
     [SerializeField]
-    private float _timer = 90f;
+    private GameObject _panelSetting;
+
+    [SerializeField]
+    private float _timer = 120f;
 
     public static GameUI Instance;
+
+    private bool _isSetting;
+
+    [SerializeField]
+    private PlayerController _playerController;
 
     private void Awake()
     {
@@ -50,8 +59,22 @@ public class GameUI : MonoBehaviour
 
     private void Start()
     {
+        Invoke(nameof(GetPlayer),1f);
         StartCoroutine(TimerCountdown());
         _loadGameBtn.onClick.AddListener(LoadGame);
+    }
+
+    private void GetPlayer()
+    {
+        _playerController = FindObjectOfType<PlayerController>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Setting();
+        }
     }
 
     public void UpdateCoin(int amount)
@@ -137,10 +160,45 @@ public class GameUI : MonoBehaviour
         _timerDefTxt.text = "Armor: 0s";
     }
 
+    private void Setting()
+    {
+        _isSetting = !_isSetting;
+        _panelSetting.SetActive(_isSetting);
+
+        if (_isSetting)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
+    }
+
     private void LoadGame()
     {
         _panelLoseGame.SetActive(false);
         Time.timeScale = 1;
         SceneManager.LoadScene("GamePlay");
     }
+
+    public void Continue()
+    {
+        Time.timeScale = 1;
+        _isSetting = false;
+        _panelSetting.SetActive(false);
+    }
+
+    public void Main()
+    {
+        SoundManager.Instance.StopSFX(Random.Range(0,1));
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Main");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }

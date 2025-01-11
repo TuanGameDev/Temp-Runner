@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using _Game.Scripts.Managers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,7 +14,7 @@ public class PlayerController : MonoBehaviour
     private BoxCollider _boxCollider;
 
     [SerializeField]
-    private float _speed = 20f;
+    private float _speed = 10f;
 
     private float _horizontalInput;
 
@@ -44,6 +45,7 @@ public class PlayerController : MonoBehaviour
         _animator = gameObject.GetComponentInChildren<Animator>();
 
         GameUI.Instance.UpdateHP(CurrentHP, _maxHP);
+        StartCoroutine(IncreaseSpeedOverTime());
     }
 
     private void Update()
@@ -78,6 +80,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("RaoChan"))
         {
+            SoundManager.Instance.PlaySFX(3);
             TakeDamage(1);
             Destroy(collision.gameObject);
             Debug.Log("Va chạm với rào chắn");
@@ -109,6 +112,17 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+        }
+    }
+
+    private IEnumerator IncreaseSpeedOverTime()
+    {
+        while (isAlive)
+        {
+            yield return new WaitForSeconds(30f);
+            _speed += 5f;
+
+            Debug.Log("Tốc độ hiện tại: " + _speed);
         }
     }
 
